@@ -225,7 +225,7 @@ jobs:
             rm -rf pcat_temp
     
             echo "Wild_KSU/kernel 目录替换完成"
-            ls -la Wild_KSU/
+            ls -la Wild_KSU/kernel
 
       - name: Fix WiFi and Bluetooth on Samsung 6.6 GKI devices
         if: ${{ ( inputs.kernel_version == '6.6' ) }}
