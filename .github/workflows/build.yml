@@ -147,7 +147,7 @@ jobs:
       - name: Add KernelSU
         run: |
           cd "$CONFIG"
-          curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
+          curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
           
       - name: Apply SUSFS Patches for KernelSU Variants
         run: |
@@ -199,33 +199,33 @@ jobs:
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 --forward -F 3 < 69_hide_stuff.patch
 
-      - name: Replace Wild_KSU - kernel with pcat
-        run: |
-            echo "完整替换 Wild_KSU/kernel 目录..."
+      # - name: Replace Wild_KSU - kernel with pcat
+      #   run: |
+      #       echo "完整替换 Wild_KSU/kernel 目录..."
     
-            # 进入 CONFIG 目录
-            cd "$CONFIG"
+      #       # 进入 CONFIG 目录
+      #       cd "$CONFIG"
     
-            # 1. 克隆 pcat 仓库到临时目录
-            echo "克隆 pcat 仓库..."
-            git clone https://github.com/han1985/pcat.git pcat_temp
+      #       # 1. 克隆 pcat 仓库到临时目录
+      #       echo "克隆 pcat 仓库..."
+      #       git clone https://github.com/han1985/pcat.git pcat_temp
     
-            # 2. 删除现有的 Wild_KSU/kernel 目录（如果存在）
-            if [ -d "Wild_KSU/kernel" ]; then
-                echo "现有的 kernel 目录..."
-            fi
+      #       # 2. 删除现有的 Wild_KSU/kernel 目录（如果存在）
+      #       if [ -d "Wild_KSU/kernel" ]; then
+      #           echo "现有的 kernel 目录..."
+      #       fi
 
-            # 4. 移动 pcat_temp 的所有内容到 Wild_KSU/kernel
-            echo "移动文件..."
-            mv pcat_temp/* Wild_KSU/kernel
+      #       # 4. 移动 pcat_temp 的所有内容到 Wild_KSU/kernel
+      #       echo "移动文件..."
+      #       mv pcat_temp/* Wild_KSU/kernel
 
-            cat Wild_KSU/kernel/allowlist.c
+      #       cat Wild_KSU/kernel/allowlist.c
     
-            # 5. 清理临时目录
-            rm -rf pcat_temp
+      #       # 5. 清理临时目录
+      #       rm -rf pcat_temp
     
-            echo "Wild_KSU/kernel 目录替换完成"
-            ls -la Wild_KSU/kernel
+      #       echo "Wild_KSU/kernel 目录替换完成"
+      #       ls -la Wild_KSU/kernel
 
       - name: Fix WiFi and Bluetooth on Samsung 6.6 GKI devices
         if: ${{ ( inputs.kernel_version == '6.6' ) }}
