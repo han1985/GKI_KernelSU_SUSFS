@@ -316,102 +316,102 @@ jobs:
           rm -rf ./common/android/abi_gki_protected_exports_*
           #perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
 
-      - name: Detect Clang Version from Configs
-        run: |
-          KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG"
-          DEFCONFIG="$KERNEL_PATH/common/arch/arm64/configs/gki_defconfig"
-          BUILDCONFIG="$KERNEL_PATH/common/build.config.gki"
-          CONSTANTSCONFIG="$KERNEL_PATH/common/build.config.constants"
-          CLANG_VERSION=""
-          CLANG_BIN_PATH=""
-          if grep -q '^CONFIG_CLANG_VERSION=' "$DEFCONFIG" 2>/dev/null; then
-            CLANG_VERSION=$(grep '^CONFIG_CLANG_VERSION=' "$DEFCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | tr -d '"' | xargs)
-          elif grep -q '^CLANG_VERSION=' "$BUILDCONFIG" 2>/dev/null; then
-            CLANG_VERSION=$(grep '^CLANG_VERSION=' "$BUILDCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | xargs)
-          elif grep -q '^CLANG_VERSION=' "$CONSTANTSCONFIG" 2>/dev/null; then
-            CLANG_VERSION=$(grep '^CLANG_VERSION=' "$CONSTANTSCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | xargs)
-            CLANG_VERSION="clang-$CLANG_VERSION"
-          else
-            echo "No clang version found in config, will auto-detect in prebuilts."
-          fi
-          if [ -z "$CLANG_VERSION" ]; then
-            if [ -d "$KERNEL_PATH/prebuilts/clang/host/linux-x86" ]; then
-              CLANG_VERSION=$(ls -d "$KERNEL_PATH"/prebuilts/clang/host/linux-x86/clang-r*/ | tail -n 1 | xargs basename)
-              CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin"
-            elif [ -d "$KERNEL_PATH/prebuilts-master/clang/host/linux-x86" ]; then
-              CLANG_VERSION=$(ls -d "$KERNEL_PATH"/prebuilts-master/clang/host/linux-x86/clang-r*/ | tail -n 1 | xargs basename)
-              CLANG_BIN_PATH="$KERNEL_PATH/prebuilts-master/clang/host/linux-x86/$CLANG_VERSION/bin"
-            else
-              CLANG_VERSION="clang"
-              CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin" # dummy
-            fi
-          else
-            if [ -d "$KERNEL_PATH/prebuilts/clang/host/linux-x86" ]; then
-              CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin"
-            else
-              CLANG_BIN_PATH="$KERNEL_PATH/prebuilts-master/clang/host/linux-x86/$CLANG_VERSION/bin"
-            fi
-          fi
-          echo "CLANG_VERSION=$CLANG_VERSION" >> $GITHUB_ENV
-          echo "CLANG_BIN_PATH=$CLANG_BIN_PATH" >> $GITHUB_ENV
+      # - name: Detect Clang Version from Configs
+      #   run: |
+      #     KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG"
+      #     DEFCONFIG="$KERNEL_PATH/common/arch/arm64/configs/gki_defconfig"
+      #     BUILDCONFIG="$KERNEL_PATH/common/build.config.gki"
+      #     CONSTANTSCONFIG="$KERNEL_PATH/common/build.config.constants"
+      #     CLANG_VERSION=""
+      #     CLANG_BIN_PATH=""
+      #     if grep -q '^CONFIG_CLANG_VERSION=' "$DEFCONFIG" 2>/dev/null; then
+      #       CLANG_VERSION=$(grep '^CONFIG_CLANG_VERSION=' "$DEFCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | tr -d '"' | xargs)
+      #     elif grep -q '^CLANG_VERSION=' "$BUILDCONFIG" 2>/dev/null; then
+      #       CLANG_VERSION=$(grep '^CLANG_VERSION=' "$BUILDCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | xargs)
+      #     elif grep -q '^CLANG_VERSION=' "$CONSTANTSCONFIG" 2>/dev/null; then
+      #       CLANG_VERSION=$(grep '^CLANG_VERSION=' "$CONSTANTSCONFIG" 2>/dev/null | head -n1 | cut -d'=' -f2 | xargs)
+      #       CLANG_VERSION="clang-$CLANG_VERSION"
+      #     else
+      #       echo "No clang version found in config, will auto-detect in prebuilts."
+      #     fi
+      #     if [ -z "$CLANG_VERSION" ]; then
+      #       if [ -d "$KERNEL_PATH/prebuilts/clang/host/linux-x86" ]; then
+      #         CLANG_VERSION=$(ls -d "$KERNEL_PATH"/prebuilts/clang/host/linux-x86/clang-r*/ | tail -n 1 | xargs basename)
+      #         CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin"
+      #       elif [ -d "$KERNEL_PATH/prebuilts-master/clang/host/linux-x86" ]; then
+      #         CLANG_VERSION=$(ls -d "$KERNEL_PATH"/prebuilts-master/clang/host/linux-x86/clang-r*/ | tail -n 1 | xargs basename)
+      #         CLANG_BIN_PATH="$KERNEL_PATH/prebuilts-master/clang/host/linux-x86/$CLANG_VERSION/bin"
+      #       else
+      #         CLANG_VERSION="clang"
+      #         CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin" # dummy
+      #       fi
+      #     else
+      #       if [ -d "$KERNEL_PATH/prebuilts/clang/host/linux-x86" ]; then
+      #         CLANG_BIN_PATH="$KERNEL_PATH/prebuilts/clang/host/linux-x86/$CLANG_VERSION/bin"
+      #       else
+      #         CLANG_BIN_PATH="$KERNEL_PATH/prebuilts-master/clang/host/linux-x86/$CLANG_VERSION/bin"
+      #       fi
+      #     fi
+      #     echo "CLANG_VERSION=$CLANG_VERSION" >> $GITHUB_ENV
+      #     echo "CLANG_BIN_PATH=$CLANG_BIN_PATH" >> $GITHUB_ENV
 
 
-      - name: Build Kernel
-        run: |
-          KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG"
-          CLANG_BIN_PATH="${{ env.CLANG_BIN_PATH }}"
-          CLANG_VERSION="${{ env.CLANG_VERSION }}"
+      # - name: Build Kernel
+      #   run: |
+      #     KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG"
+      #     CLANG_BIN_PATH="${{ env.CLANG_BIN_PATH }}"
+      #     CLANG_VERSION="${{ env.CLANG_VERSION }}"
           
-          if [ -d "$CLANG_BIN_PATH" ] && [ -x "$CLANG_BIN_PATH/clang" ]; then
-            export PATH="$CLANG_BIN_PATH:$PATH"
-            SELECTED_CLANG="$CLANG_BIN_PATH/clang"
-          elif command -v clang >/dev/null 2>&1; then
-            SELECTED_CLANG="$(command -v clang)"
-            exit 1
-          else
-            exit 1
-          fi
+      #     if [ -d "$CLANG_BIN_PATH" ] && [ -x "$CLANG_BIN_PATH/clang" ]; then
+      #       export PATH="$CLANG_BIN_PATH:$PATH"
+      #       SELECTED_CLANG="$CLANG_BIN_PATH/clang"
+      #     elif command -v clang >/dev/null 2>&1; then
+      #       SELECTED_CLANG="$(command -v clang)"
+      #       exit 1
+      #     else
+      #       exit 1
+      #     fi
           
-          LLVM_TOOLS="clang ld.lld llvm-ar llvm-objcopy llvm-objdump llvm-nm"
-          MISSING_TOOLS=""
-          for tool in $LLVM_TOOLS; do
-            if ! command -v $tool >/dev/null 2>&1; then
-              MISSING_TOOLS="$MISSING_TOOLS $tool"
-            fi
-          done
+      #     LLVM_TOOLS="clang ld.lld llvm-ar llvm-objcopy llvm-objdump llvm-nm"
+      #     MISSING_TOOLS=""
+      #     for tool in $LLVM_TOOLS; do
+      #       if ! command -v $tool >/dev/null 2>&1; then
+      #         MISSING_TOOLS="$MISSING_TOOLS $tool"
+      #       fi
+      #     done
           
-          if [ -n "$MISSING_TOOLS" ]; then
-            sudo apt-get update
-            sudo apt-get install -yq --no-install-recommends llvm
-            for tool in $MISSING_TOOLS; do
-              if ! command -v $tool >/dev/null 2>&1; then
-                exit 1
-              fi
-            done
-          fi
+      #     if [ -n "$MISSING_TOOLS" ]; then
+      #       sudo apt-get update
+      #       sudo apt-get install -yq --no-install-recommends llvm
+      #       for tool in $MISSING_TOOLS; do
+      #         if ! command -v $tool >/dev/null 2>&1; then
+      #           exit 1
+      #         fi
+      #       done
+      #     fi
           
-          KERNEL_VERSION="${{ inputs.kernel_version }}"
-          if [[ "$KERNEL_VERSION" == "5.10" ]]; then
-            USE_LLVM_IAS=true
-          fi
+      #     KERNEL_VERSION="${{ inputs.kernel_version }}"
+      #     if [[ "$KERNEL_VERSION" == "5.10" ]]; then
+      #       USE_LLVM_IAS=true
+      #     fi
           
-          cd "$KERNEL_PATH/common" || exit 1
+      #     cd "$KERNEL_PATH/common" || exit 1
           
-          MAKE_ARGS="LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- \
-            RUSTC=$KERNEL_PATH/prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
-            PAHOLE=$KERNEL_PATH/prebuilts/kernel-build-tools/linux-x86/bin/pahole \
-            LD=ld.lld HOSTLD=ld.lld"
-          if [[ -v USE_LLVM_IAS ]]; then
-            MAKE_ARGS="LLVM_IAS=1 $MAKE_ARGS"
-          fi
+      #     MAKE_ARGS="LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- \
+      #       RUSTC=$KERNEL_PATH/prebuilts/rust/linux-x86/1.73.0b/bin/rustc \
+      #       PAHOLE=$KERNEL_PATH/prebuilts/kernel-build-tools/linux-x86/bin/pahole \
+      #       LD=ld.lld HOSTLD=ld.lld"
+      #     if [[ -v USE_LLVM_IAS ]]; then
+      #       MAKE_ARGS="LLVM_IAS=1 $MAKE_ARGS"
+      #     fi
           
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2 -flto=thin -fno-stack-protector" gki_defconfig Image Image.gz Image.lz4 || exit 1
+      #     make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2 -flto=thin -fno-stack-protector" gki_defconfig Image Image.gz Image.lz4 || exit 1
           
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2 -flto=thin -fno-stack-protector" || exit 1
+      #     make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2 -flto=thin -fno-stack-protector" || exit 1
 
       - name: Create Kernel ZIP
         run: |
-          cp $CONFIG/common/out/arch/arm64/boot/Image AnyKernel3/Image
+          cp $CONFIG/common AnyKernel3
 
           cd AnyKernel3
           
@@ -424,57 +424,57 @@ jobs:
           ZIP_NAME="WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-AnyKernel3.zip"
           zip -r "../$ZIP_NAME" ./*
 
-      - name: Create Bootimgs Folder and Copy Images
-        run: |
-          mkdir bootimgs
+      # - name: Create Bootimgs Folder and Copy Images
+      #   run: |
+      #     mkdir bootimgs
 
-          echo "Creating bootimgs folder and copying images..."
-          cp $CONFIG/common/out/arch/arm64/boot/Image ./bootimgs
-          cp $CONFIG/common/out/arch/arm64/boot/Image.gz ./bootimgs
-          cp $CONFIG/common/out/arch/arm64/boot/Image.lz4 ./bootimgs
+      #     echo "Creating bootimgs folder and copying images..."
+      #     cp $CONFIG/common/out/arch/arm64/boot/Image ./bootimgs
+      #     cp $CONFIG/common/out/arch/arm64/boot/Image.gz ./bootimgs
+      #     cp $CONFIG/common/out/arch/arm64/boot/Image.lz4 ./bootimgs
 
-      - name: Android 12 boot image build script
-        if: ${{ inputs.android_version == 'android12' }}
-        run: |
-          echo "Changing to configuration directory: $CONFIG..."
-          cd bootimgs
+      # - name: Android 12 boot image build script
+      #   if: ${{ inputs.android_version == 'android12' }}
+      #   run: |
+      #     echo "Changing to configuration directory: $CONFIG..."
+      #     cd bootimgs
           
-          # Prepare sublevel for naming
-          SUBLEVEL_FOR_NAME="${{ inputs.sub_level }}"
-          if [ -n "$ACTUAL_SUBLEVEL" ]; then
-            SUBLEVEL_FOR_NAME="$ACTUAL_SUBLEVEL"
-          fi
+      #     # Prepare sublevel for naming
+      #     SUBLEVEL_FOR_NAME="${{ inputs.sub_level }}"
+      #     if [ -n "$ACTUAL_SUBLEVEL" ]; then
+      #       SUBLEVEL_FOR_NAME="$ACTUAL_SUBLEVEL"
+      #     fi
           
-          GKI_URL=https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-"${{ inputs.os_patch_level }}"_"${{ inputs.revision }}".zip
-          FALLBACK_URL=https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-2023-01_r1.zip
+      #     GKI_URL=https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-"${{ inputs.os_patch_level }}"_"${{ inputs.revision }}".zip
+      #     FALLBACK_URL=https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-2023-01_r1.zip
           
-          # Check if the GKI URL is available
-          echo "Checking if GKI kernel URL is reachable: $GKI_URL"
-          status=$(curl -sL -w "%{http_code}" "$GKI_URL" -o /dev/null)
+      #     # Check if the GKI URL is available
+      #     echo "Checking if GKI kernel URL is reachable: $GKI_URL"
+      #     status=$(curl -sL -w "%{http_code}" "$GKI_URL" -o /dev/null)
           
-          if [ "$status" = "200" ]; then
-              echo "[+] Downloading from GKI_URL"
-              curl -Lo gki-kernel.zip "$GKI_URL"
-          else
-              echo "[+] $GKI_URL not found, using $FALLBACK_URL"
-              curl -Lo gki-kernel.zip "$FALLBACK_URL"
-          fi
+      #     if [ "$status" = "200" ]; then
+      #         echo "[+] Downloading from GKI_URL"
+      #         curl -Lo gki-kernel.zip "$GKI_URL"
+      #     else
+      #         echo "[+] $GKI_URL not found, using $FALLBACK_URL"
+      #         curl -Lo gki-kernel.zip "$FALLBACK_URL"
+      #     fi
           
-          # Unzip the downloaded kernel and remove the zip
-          echo "Unzipping the downloaded kernel..."
-          unzip gki-kernel.zip && rm gki-kernel.zip
+      #     # Unzip the downloaded kernel and remove the zip
+      #     echo "Unzipping the downloaded kernel..."
+      #     unzip gki-kernel.zip && rm gki-kernel.zip
           
-          echo "Unpacking boot.img..."
-          FULL_PATH=$(pwd)/boot-5.10.img
-          echo "Unpacking using: $FULL_PATH"
+      #     echo "Unpacking boot.img..."
+      #     FULL_PATH=$(pwd)/boot-5.10.img
+      #     echo "Unpacking using: $FULL_PATH"
           
-          echo "Running unpack_bootimg.py..."
-          $UNPACK_BOOTIMG --boot_img="$FULL_PATH"
+          # echo "Running unpack_bootimg.py..."
+          # $UNPACK_BOOTIMG --boot_img="$FULL_PATH"
           
-          echo "Building boot.img"
-          $MKBOOTIMG --header_version 4 --kernel Image --output boot.img --ramdisk out/ramdisk --os_version 12.0.0 --os_patch_level "${{ inputs.os_patch_level }}"
-          $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
-          cp ./boot.img ../WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-boot.img
+          # echo "Building boot.img"
+          # $MKBOOTIMG --header_version 4 --kernel Image --output boot.img --ramdisk out/ramdisk --os_version 12.0.0 --os_patch_level "${{ inputs.os_patch_level }}"
+          # $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
+          # cp ./boot.img ../WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-boot.img
           
           # echo "Building boot-gz.img"
           # $MKBOOTIMG --header_version 4 --kernel Image.gz --output boot-gz.img --ramdisk out/ramdisk --os_version 12.0.0 --os_patch_level "${{ inputs.os_patch_level }}"
@@ -486,21 +486,21 @@ jobs:
           # $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot-lz4.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
           # cp ./boot-lz4.img ../WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-boot-lz4.img
 
-      - name: Android 13/14/15 boot image build script
-        if: ${{ inputs.android_version == 'android13' || inputs.android_version == 'android14' || inputs.android_version == 'android15' }}
-        run: |
-          cd bootimgs
+      # - name: Android 13/14/15 boot image build script
+      #   if: ${{ inputs.android_version == 'android13' || inputs.android_version == 'android14' || inputs.android_version == 'android15' }}
+      #   run: |
+      #     cd bootimgs
 
-          # Prepare sublevel for naming
-          SUBLEVEL_FOR_NAME="${{ inputs.sub_level }}"
-          if [ -n "$ACTUAL_SUBLEVEL" ]; then
-            SUBLEVEL_FOR_NAME="$ACTUAL_SUBLEVEL"
-          fi
+      #     # Prepare sublevel for naming
+      #     SUBLEVEL_FOR_NAME="${{ inputs.sub_level }}"
+      #     if [ -n "$ACTUAL_SUBLEVEL" ]; then
+      #       SUBLEVEL_FOR_NAME="$ACTUAL_SUBLEVEL"
+      #     fi
           
-          echo "Building boot.img"
-          $MKBOOTIMG --header_version 4 --kernel Image --output boot.img
-          $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
-          cp ./boot.img ../WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-boot.img
+      #     echo "Building boot.img"
+      #     $MKBOOTIMG --header_version 4 --kernel Image --output boot.img
+      #     $AVBTOOL add_hash_footer --partition_name boot --partition_size $((64 * 1024 * 1024)) --image boot.img --algorithm SHA256_RSA2048 --key $BOOT_SIGN_KEY_PATH
+      #     cp ./boot.img ../WKSU-$KSUVER-${{ inputs.android_version }}-${{ inputs.kernel_version }}.$SUBLEVEL_FOR_NAME-${{ inputs.os_patch_level }}-boot.img
           
           # echo "Building boot-gz.img"
           # $MKBOOTIMG --header_version 4 --kernel Image.gz --output boot-gz.img
@@ -526,4 +526,4 @@ jobs:
           name: WKSU-${{ env.KSUVER }}-${{ inputs.android_version }}-${{ inputs.kernel_version }}.${{ env.ACTUAL_SUBLEVEL || inputs.sub_level }}-${{ inputs.os_patch_level }}
           path: |
             *.zip
-            *.img
+            # *.img
