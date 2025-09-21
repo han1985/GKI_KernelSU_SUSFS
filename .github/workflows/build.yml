@@ -411,7 +411,7 @@ jobs:
 
       - name: Create Kernel ZIP
         run: |
-          cp $CONFIG/common AnyKernel3
+          cp -r $CONFIG/common AnyKernel3
 
           cd AnyKernel3
           
