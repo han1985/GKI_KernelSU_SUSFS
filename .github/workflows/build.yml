@@ -332,6 +332,19 @@ jobs:
           fi
         fi
 
+    - name: Package Kernel Common Source
+      run: |
+        cd "$GITHUB_WORKSPACE/kernel"
+        zip -r "$GITHUB_WORKSPACE/${{ steps.extract.outputs.file_name }}-kernel-common.zip" common
+
+    - name: Upload Kernel Common Source
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.extract.outputs.file_name }}-Kernel-Source
+        path: ${{ github.workspace }}/${{ steps.extract.outputs.file_name }}-kernel-common.zip
+        if-no-files-found: error
+        compression-level: 9
+
     - name: Prepare AnyKernel3 Zip
       run: |
         # Copy Image from normal build locations

@@ -44,11 +44,11 @@ on:
         type: string
         default: ""
         required: false
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - 'v*'
 
 jobs:
   fetch-commits:
