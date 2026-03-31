@@ -14,7 +14,7 @@ runs:
       working-directory: ${{ github.workspace }}/kernel
       run: |
         # Clone the repository
-        curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/refs/heads/canary/kernel/setup.sh" | bash -s main
+        curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/refs/heads/master/kernel/setup.sh?token=GHSAT0AAAAAADJ7M3EWAF2O5ICXRGGITYRS2OLH4DQ"
 
     - name: Enable KernelSU Config
       shell: bash
