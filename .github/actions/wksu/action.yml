@@ -14,8 +14,8 @@ runs:
       working-directory: ${{ github.workspace }}/kernel
       run: |
         # Clone the repository
-        curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/stable/kernel/setup.sh" | bash -s ${{ inputs.ksu_commit }}
-        #curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/refs/heads/master/kernel/setup.sh" | bash -s master
+        #curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/stable/kernel/setup.sh" | bash -s ${{ inputs.ksu_commit }}
+        curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/refs/heads/master/kernel/setup.sh" | bash -s master
 
     - name: Enable KernelSU Config
       shell: bash
@@ -32,10 +32,10 @@ runs:
       working-directory: ${{ github.workspace }}/kernel/Wild_KSU
       run: |
         # Extract and export KSU version info
-        KSU_GIT_VERSION=$(git rev-list --count HEAD 2>/dev/null)
-        KSU_GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
-        KSU_COMMIT=$(git rev-parse --short HEAD 2>/dev/null)
-        KSU_VERSION=$((30000 + KSU_GIT_VERSION))
+        KSU_GIT_VERSION=1
+        KSU_GIT_TAG=v3.1.2
+        KSU_COMMIT=b8c69da5
+        KSU_VERSION=33212
         
         echo "KSU_GIT_TAG=$KSU_GIT_TAG" >> $GITHUB_ENV
         echo "KSU_VERSION=$KSU_VERSION" >> $GITHUB_ENV
