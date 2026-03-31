@@ -14,7 +14,7 @@ runs:
       working-directory: ${{ github.workspace }}/kernel
       run: |
         # Clone the repository
-        curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/stable/kernel/setup.sh" | bash -s v3.1.2
+        curl -LSs "https://raw.githubusercontent.com/han1985/Wild_KSU/refs/heads/canary/kernel/setup.sh" | bash -s main
 
     - name: Enable KernelSU Config
       shell: bash
